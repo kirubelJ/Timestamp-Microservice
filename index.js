@@ -25,21 +25,10 @@ app.get("/api/hello", function (req, res) {
 
 // your Second API endpoint...
 app.get("/api/:date?", function (req, res) {
-  const inputDate = req.params.date;
+  const { date } = req.params;
 
-  if (inputDate && !isNaN(inputDate)) {
-    const unixTimestamp = parseInt(inputDate);
-    const d = new Date(unixTimestamp);
-
-    //
-    res.json({
-      unix: d.getUTCMilliseconds(),
-      utc: d.getUTCDate(),
-    });
-  }
-
-  if (!inputDate) {
-    // If no date is provided, return current UTC time
+  if (!date) {
+    // If no date parameter is provided, return current UTC time
     const currentDate = new Date();
     res.json({
       unix: currentDate.getTime(),
@@ -48,13 +37,11 @@ app.get("/api/:date?", function (req, res) {
     return;
   }
 
-  const timestamp = parseInt(inputDate); // Try to parse inputDate as a Unix timestamp
+  const timestamp = parseInt(date);
 
-  // Check if inputDate is a valid Unix timestamp (in milliseconds)
   if (!isNaN(timestamp)) {
+    // If date is a valid Unix timestamp (in milliseconds)
     const d = new Date(timestamp);
-
-    // Check if the parsed date object is valid
     if (!isNaN(d.getTime())) {
       res.json({
         unix: d.getTime(),
@@ -64,10 +51,8 @@ app.get("/api/:date?", function (req, res) {
       res.json({ error: "Invalid Date" });
     }
   } else {
-    // If inputDate is not a valid Unix timestamp
-    const d = new Date(inputDate); // Try parsing inputDate as a date string
-
-    // Check if the parsed date object is valid
+    // If date is a valid date string
+    const d = new Date(date);
     if (!isNaN(d.getTime())) {
       res.json({
         unix: d.getTime(),
