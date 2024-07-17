@@ -38,9 +38,21 @@ app.get("/api/:date?", function (req, res) {
       utc: unixTimestamp.getUTCDate,
     });
   }
+  //e.g  /api/1451001600000 should return { unix: 1451001600000, utc: "Fri, 25 Dec 2015 00:00:00 GMT" }
+  if (req.params) {
+    const p = parseInt(req.params);
+    const d = new Date(req.params);
+    // res.json({
+    //   unix: d.getMilliseconds(),
+    //   utc: p.
+    // });
+    res.json({ unix: req.params, utc: d.getUTCDate });
+  }
+
   if (!req.params.date) {
     res.json({
       unix: Date.now(),
+      utc: Date.now(),
     });
   } else {
     res.json({
