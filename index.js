@@ -27,6 +27,17 @@ app.get("/api/hello", function (req, res) {
 app.get("/api/:date?", function (req, res) {
   const inputDate = req.params.date;
 
+  if (inputDate && !isNaN(inputDate)) {
+    const unixTimestamp = parseInt(inputDate);
+    const d = new Date(unixTimestamp);
+
+    //
+    res.json({
+      unix: d.getUTCMilliseconds(),
+      utc: d.getUTCDate(),
+    });
+  }
+
   if (!inputDate) {
     // If no date is provided, return current UTC time
     const currentDate = new Date();
