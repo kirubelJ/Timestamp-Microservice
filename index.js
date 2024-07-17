@@ -25,42 +25,47 @@ app.get("/api/hello", function (req, res) {
 
 // your Second API endpoint...
 app.get("/api/:date?", function (req, res) {
-  const id = req.params.date;
-  const inputDate = new Date(req.params.date);
-  if (inputDate && !isNaN(inputDate)) {
-    const unixTimestamp = parseInt(inputDate);
-    const d = new Date(unixTimestamp);
+  const inputDate = req.params.date;
 
-    //
+  if (!inputDate) {
+    // If no date is provided, return current UTC time
+    const currentDate = new Date();
     res.json({
-      inputDate: id,
-      unix: inputDate.getUTCMilliseconds(),
-      utc: unixTimestamp.getUTCDate,
+      unix: currentDate.getTime(),
+      utc: currentDate.toUTCString(),
     });
-  }
-  //e.g  /api/1451001600000 should return { unix: 1451001600000, utc: "Fri, 25 Dec 2015 00:00:00 GMT" }
-  if (req.params) {
-    const p = parseInt(req.params);
-    const d = new Date(req.params);
-    // res.json({
-    //   unix: d.getMilliseconds(),
-    //   utc: p.
-    // });
-    res.json({ unix: req.params, utc: d.getUTCDate });
+    return;
   }
 
-  if (!req.params.date) {
-    res.json({
-      unix: Date.now(),
-      utc: Date.now(),
-    });
+  const timestamp = parseInt(inputDate); // Try to parse inputDate as a Unix timestamp
+
+  // Check if inputDate is a valid Unix timestamp (in milliseconds)
+  if (!isNaN(timestamp)) {
+    const d = new Date(timestamp);
+
+    // Check if the parsed date object is valid
+    if (!isNaN(d.getTime())) {
+      res.json({
+        unix: d.getTime(),
+        utc: d.toUTCString(),
+      });
+    } else {
+      res.json({ error: "Invalid Date" });
+    }
   } else {
-    res.json({
-      error: "Invalid Date",
-    });
-  }
+    // If inputDate is not a valid Unix timestamp
+    const d = new Date(inputDate); // Try parsing inputDate as a date string
 
-  //res.json({ unix: d.getMilliseconds });
+    // Check if the parsed date object is valid
+    if (!isNaN(d.getTime())) {
+      res.json({
+        unix: d.getTime(),
+        utc: d.toUTCString(),
+      });
+    } else {
+      res.json({ error: "Invalid Date" });
+    }
+  }
 });
 
 // Listen on port set in environment variable or default to 3000
